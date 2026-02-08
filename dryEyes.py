@@ -1,5 +1,9 @@
+from click import progressbar
 import customtkinter
 import pyautogui
+
+TIME_WITHOUT_WARNING = 5000 # Time in milliseconds without showing the warning window
+TIME_WITH_WARNING = 20000 # Time in milliseconds to wait before eliminating the warning window if no movement is detected
 
 class App(customtkinter.CTk):
 
@@ -8,7 +12,7 @@ class App(customtkinter.CTk):
         super().__init__()
         self.warning_active = False
         self.withdraw()  # Hides the main window 
-        self.after(5000, self.time_count)
+        self.after(TIME_WITHOUT_WARNING, self.time_count)
 
 
     # manage if is necessary to create a warning window
@@ -23,7 +27,7 @@ class App(customtkinter.CTk):
         
         
         # Schedule the next check
-        self.after(5000, self.time_count)
+        self.after(TIME_WITHOUT_WARNING, self.time_count)
 
 
     # create the warning window
@@ -32,13 +36,13 @@ class App(customtkinter.CTk):
         current_pos = pyautogui.position()
 
         self.warning_window = customtkinter.CTkToplevel(self)
-        self.warning_window.geometry("300x200")
+        self.warning_window.geometry("500x150")
         self.warning_window.title("Warning")
         self.warning_window.overrideredirect(True) # This line removes the top bar (X, Minimize, Maximize, and Title)
         self.warning_window.attributes("-topmost", True) # overlap other windows
 
 
-        label = customtkinter.CTkLabel(self.warning_window, text="Time to take a break!")
+        label = customtkinter.CTkLabel(self.warning_window, text="Time to take a break!\n Don´t move your mouse for 20s, go walk around, or do some eye exercises!", font=customtkinter.CTkFont(size=14))
         label.pack(pady=20)
 
         self.progressbar = customtkinter.CTkProgressBar(self.warning_window, orientation="horizontal")
@@ -49,12 +53,12 @@ class App(customtkinter.CTk):
         self.after(1000, lambda: self.windowElimination(current_pos, count))
 
 
-    # manage if is time to eliminate the warning window
+    # manage if is time to eliminate the warning window and creates the progress bar
     def windowElimination(self, initial_pos,count):
 
-        self.progressbar.set(count/3000) # Update progress bar value
+        self.progressbar.set(count/TIME_WITH_WARNING) # Update progress bar value
 
-        if (initial_pos == pyautogui.position() and count >= 3000 ): # Mouse hasn't moved 
+        if (initial_pos == pyautogui.position() and count >= TIME_WITH_WARNING ): # Mouse hasn't moved 
             print("No movement detected.Deleting Warning Window...")
             self.warning_window.destroy() # eliminates the warning window
             self.warning_active = False
@@ -66,13 +70,6 @@ class App(customtkinter.CTk):
         else:
             count += 1000
             self.after(1000, lambda: self.windowElimination(initial_pos, count))
-
-
-    # create and animate the progression bar
-    def progressBar(self):
-        pass
-
-
 
 
 
