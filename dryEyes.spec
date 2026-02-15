@@ -5,7 +5,7 @@ a = Analysis(
     ['dryEyes.py'],
     pathex=[],
     binaries=[],
-    datas=[],
+    datas=[('icon.png', '.'), ('C:/Users/reve/AppData/Local/Programs/Python/Python312/Lib/site-packages/customtkinter', 'customtkinter/')],
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},
